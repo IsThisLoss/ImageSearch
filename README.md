@@ -45,3 +45,6 @@ Run
 ```
   uvicorn image_search:app
 ```
+
+## Preview
+![main](docs/main.png)
