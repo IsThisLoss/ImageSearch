@@ -2,6 +2,15 @@
 
 Pet project to test FastAPI web fremework
 
+## About
+
+Simple web application. It provides http api and web ui to upload url to image, title and description. After uploading server tries to detect text on image. Finally it stop that data in mongo db, which allows to perform full text search.
+
+## Todo
+- Add edit option.
+- Detect image text in async queue.
+- Make authorization.
+
 ## Run
 The simplest way is to use docker compose:
 ```
