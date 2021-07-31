@@ -1,4 +1,4 @@
-# image_search
+# ImageSearch
 
 Pet project to test FastAPI web fremework
 
