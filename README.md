@@ -7,7 +7,6 @@ Pet project to test FastAPI web fremework
 Simple web application. It provides http api and web ui to upload url to image, title and description. After uploading server tries to detect text on image. Finally it stop that data in mongo db, which allows to perform full text search.
 
 ## Todo
-- Add remove option
 - Add edit option.
 - Detect image text in async queue.
 - Make authorization.
@@ -16,22 +15,22 @@ Simple web application. It provides http api and web ui to upload url to image, 
 The simplest way is to use docker compose:
 ```
   sudo docker-compose build
-  sudo docker-compose run
+  sudo docker-compose up
 ```
 Details:
 Backend is a python application.
 One can manually build python package from setup.py, see commands sequence in backend/Dockerfile
 
-Frontend is a jquery + bootstrap application.
-One can just place frontend/html in web server's working directory,
-but there is additional nginx configuration to server statis resources and
-proxy api requests to the backend application. Of couse there is frontend/Dockerfile
-with all necessary commands.
+Frontend is a vuejs + typescript + bootstrap application.
 
 ## Development
 
 ### Frontend
-Just put frontend/html folder to web server's working directory.
+To run dev environment use default vuejs flow
+```
+  npm install
+  npm run serve
+```
 
 ### Backend
 Install python and pip

@@ -1,28 +1,28 @@
 upstream backend {
-    server ${API_UPSTREAM}:8080;
+  server ${API_UPSTREAM_ADDR}:${API_UPSTREAM_PORT};
 }
 
 server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+  listen 80 default_server;
+  listen [::]:80 default_server;
 
-    root /var/www/html;
+  root /usr/share/nginx/html;
 
-    index index.html index.htm index.nginx-debian.html;
+  index index.html index.htm index.nginx-debian.html;
 
-    server_name _;
+  server_name _;
 
-    location /api {
-            proxy_set_header Host              $host;
-            proxy_set_header X-Real-IP         $remote_addr;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-Host  $host;
-            proxy_set_header X-Forwarded-Port  $server_port;
+  location /api {
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host  $host;
+    proxy_set_header X-Forwarded-Port  $server_port;
 
-            proxy_pass http://backend;
-    }
+    proxy_pass http://backend;
+  }
 
-    location / {
-      try_files $uri $uri/ =404;
-    }
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
 }

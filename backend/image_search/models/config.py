@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     mongodb_db: str = 'image_search'
     mongodb_image_collection: str = 'images'
 
+    web_origin: str = ""
+
     class Config:
         env_file = '.env'
 

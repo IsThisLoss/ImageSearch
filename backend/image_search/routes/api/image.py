@@ -10,7 +10,7 @@ router = APIRouter(prefix='/api')
 
 
 @router.get('/image', response_model=Images)
-async def get_image():
+async def get_images():
     image_storage = get_image_storage()
     images = await image_storage.get_all()
     return Images(images=images)
