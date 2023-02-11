@@ -1,13 +1,15 @@
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, File, UploadFile, Depends
 
 from ...models import media
 from ... import object_storage
+
+from . import user
 
 router = APIRouter(prefix='/api')
 
 
 @router.post('/media', response_model=media.UploadResponse)
-async def get_images(file: UploadFile = File(...)):
+async def get_images(file: UploadFile = File(...), _ = Depends(user.get_current_user)):
     storage = object_storage.get_object_storage()
     url = await storage.upload_file(
         file.file._file,
