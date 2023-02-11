@@ -1,3 +1,4 @@
+import typing
 from .image import InputImage, Image
 from ..db import mongo
 from .cv import get_text_from_image_url
@@ -20,18 +21,26 @@ class ImageStorage:
         data['id'] = str(data.pop('_id'))
         return data
 
-    async def get_all(self) -> List[Image]:
-        cursor = self.images.find()
+    async def get_all(self, username: str) -> List[Image]:
+        cursor = self.images.find(
+            {'username': username},
+        )
         result = []
         async for entry in cursor:
             result.append(Image(**self.to_model_id(entry)))
         return result
 
-    async def get(self, id: str) -> Image:
-        data: dict = await self.images.find_one({'_id': ObjectId(id)})
+    async def get(self, username: str, id: str) -> typing.Optional[Image]:
+        data: dict = await self.images.find_one(
+            {
+                '_id': ObjectId(id),
+                'username': username,
+            },
+        )
+        # FIXME
         return Image(**self.to_model_id(data))
 
-    async def put(self, image: InputImage) -> str:
+    async def put(self, username: str, image: InputImage) -> str:
         cv_text = await get_text_from_image_url(image.url)
         url: str = image.url
         data: dict = image.dict()
@@ -39,29 +48,30 @@ class ImageStorage:
         # TODO Распозновать текст асинхронно
         data.update({'cv_text': cv_text})
         result = await self.images.find_one_and_update(
-            {'url': url},
+            {'url': url, 'username': username},
             {'$setOnInsert': data},
             new=True,
             upsert=True,
         )
         return str(result['_id'])
 
-    async def update(self, id: str, image: InputImage) -> bool:
+    async def update(self, username: str, id: str, image: InputImage) -> bool:
         result = await self.images.update_one(
-            {'_id': ObjectId(id)},
+            {'_id': ObjectId(id), 'username': username},
             {'$set': image.dict()},
         )
         return result.modified_count > 0
 
-    async def delete(self, id: str):
-        await self.images.delete_many({'_id': ObjectId(id)})
+    async def delete(self, username: str, id: str):
+        await self.images.delete_many({'_id': ObjectId(id), 'username': username})
 
-    async def search(self, text: str) -> List[Image]:
+    async def search(self, username: str, text: str) -> List[Image]:
         cursor = self.images.find(
             {
                 '$text': {
-                    '$search': text
-                }
+                    '$search': text,
+                },
+                'username': username,
             }
         )
         result = []
