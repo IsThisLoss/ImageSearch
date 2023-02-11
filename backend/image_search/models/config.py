@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     mongodb_port: int = 27017
     mongodb_db: str = 'image_search'
     mongodb_image_collection: str = 'images'
+    mongodb_user_collection: str = 'users'
 
     web_origin: str = ""
 
@@ -19,6 +20,9 @@ class Settings(BaseSettings):
     s3_bucket: str = 'image-search'
 
     media_prefix: str = '/media'
+
+    secret: str = 'secret'
+    access_token_expire_minutes: int = 10
 
     class Config:
         env_file = '.env'

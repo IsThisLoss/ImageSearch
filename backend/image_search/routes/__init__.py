@@ -1,4 +1,4 @@
-from .api import image, search, media
+from .api import image, search, media, user
 from ..models import config
 
 from fastapi import FastAPI
@@ -13,6 +13,7 @@ app = FastAPI()
 app.include_router(image.router)
 app.include_router(search.router)
 app.include_router(media.router)
+app.include_router(user.router)
 
 app.add_middleware(
     CORSMiddleware,
