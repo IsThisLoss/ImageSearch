@@ -1,6 +1,6 @@
 from fastapi import APIRouter, File, UploadFile, Depends
 
-from ...models import media
+from ...models import media, config
 from ... import object_storage
 
 from . import user
@@ -15,4 +15,6 @@ async def get_images(file: UploadFile = File(...), _ = Depends(user.get_current_
         file.file._file,
         file.content_type,
     )
+    cfg = config.get_config()
+    url = f'{cfg.s3_endpoint}/{cfg.s3_bucket}{url}'
     return media.UploadResponse(url=url)
