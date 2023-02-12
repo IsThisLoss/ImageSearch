@@ -1,5 +1,6 @@
 <template>
-  <Header
+<div v-show="loaded">
+  <PageHeader
     @searchSubmit="searchImage"
   />
   <div class="container-fluid">
@@ -7,49 +8,47 @@
         Images
     </h3>
     <div class="row">
-        <div class="col-lg-4 mb-4">
-          <NewImage
-            @submit="createImage"
-          />
-        </div>
-        <div
-          v-for="image in images" :key="image.title"
-          class="col-lg-4 mb-4"
-        >
-          <ImageCard
-            :image="image"
-            @deleteImage="deleteImage"
-          />
-        </div>
+      <div class="col-lg-4 mb-4">
+        <NewImage @submit="createImage"/>
+      </div>
+      <div
+        v-for="image in images" :key="image.title"
+        class="col-lg-4 mb-4"
+      >
+        <ImageCard :image="image" @deleteImage="deleteImage"/>
+      </div>
     </div>
   </div>
-  <Footer/>
+  <PageFooter/>
+</div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import Header from '@/components/Header.vue';
-import Footer from '@/components/Footer.vue';
+import PageHeader from '@/components/PageHeader.vue';
+import PageFooter from '@/components/PageFooter.vue';
 import ImageCard from '@/components/ImageCard.vue';
 import NewImage from '@/components/NewImage.vue';
 
 import imagesApi, { InputImage, Image } from '@/api/images'
 
 interface Data {
+  loaded: boolean
   images: Array<Image>
 }
 
 export default defineComponent({
-  name: 'Main',
+  name: 'MainPage',
   components: {
-    Header,
-    Footer,
+    PageHeader,
+    PageFooter,
     ImageCard,
     NewImage,
   },
   data(): Data {
     return {
+      loaded: false,
       images: [],
     }
   },
@@ -61,8 +60,15 @@ export default defineComponent({
       imagesApi.getAll()
       .then(resp => {
         this.images = resp.images
+        this.loaded = true
       })
-      .catch(err => console.log(err))
+      .catch((err) => {
+        console.log(err)
+        const code = err.response.status
+        if (code === 401) {
+          this.$router.push('/login')
+        }
+      })
     },
     createImage(image: InputImage) {
       imagesApi.create(image)
