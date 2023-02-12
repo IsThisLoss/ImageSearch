@@ -28,8 +28,8 @@ Frontend is a vuejs + typescript + bootstrap application.
 ### Frontend
 To run dev environment use default vuejs flow
 ```
-  npm install
-  npm run serve
+  yarn install
+  yarn run serve
 ```
 
 ### Backend
