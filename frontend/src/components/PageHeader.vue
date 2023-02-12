@@ -14,7 +14,7 @@ import { defineComponent } from 'vue';
 import SearchBar from './SearchBar.vue'
 
 export default defineComponent({
-  name: 'Header',
+  name: 'PageHeader',
   components: {
     SearchBar,
   },
