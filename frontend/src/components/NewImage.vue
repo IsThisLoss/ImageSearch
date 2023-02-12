@@ -28,6 +28,7 @@
               v-model.trim="description"
             />
           </div>
+          <!--
           <div class="form-group mt-2">
             <input
               type="text"
@@ -36,6 +37,14 @@
               v-model.trim="url"
             />
           </div>
+          -->
+          <input
+            v-on:change="handleFileUpload($event)"
+            type="file"
+            class="mt-2 form-control"
+            ref="fileInput"
+            accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+          >
           <button class="mt-2 btn btn-primary btn-block" type="submit">
               Save
           </button>
@@ -49,6 +58,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { InputImage } from '@/api/images'
+import mediaApi from '@/api/media'
 
 export default defineComponent({
   data(): InputImage {
@@ -75,13 +85,23 @@ export default defineComponent({
       this.title = ""
       this.description = ""
       this.url = ""
+      const fileInput = this.$refs.fileInput as any
+      fileInput.value = null
     },
     isValid(): boolean {
       if (this.title === "" || this.description == "" || this.url === "") {
         return false
       }
       return true
-    }
+    },
+    handleFileUpload(event: any) {
+      const file = event.target.files[0];
+      const data = new FormData();
+      data.append('file', file, file.name);
+      mediaApi.upload(data).then((resp: string) => {
+        this.url = resp
+      })
+    },
   },
 })
 </script>
