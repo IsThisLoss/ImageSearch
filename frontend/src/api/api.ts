@@ -44,12 +44,21 @@ export class ApiClient {
     return resp.data
   }
 
-  async postForm<TRequest, TResponse>(path: string, req: TRequest): Promise<TResponse> {
+  async postUrlEncoded<TRequest, TResponse>(path: string, req: TRequest): Promise<TResponse> {
     const params = new URLSearchParams()
     for (const [k, v] of Object.entries(req as any)) {
       params.append(k as string, v as string)
     }
     const resp = await this.client.post<TResponse>(path, params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    return resp.data
+  }
+
+  async postForm<TRequest, TResponse>(path: string, req: TRequest): Promise<TResponse> {
+    const resp = await this.client.post<TResponse>(path, req, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
