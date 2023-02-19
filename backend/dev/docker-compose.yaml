@@ -21,3 +21,9 @@ services:
       MINIO_ROOT_USER: image_search
       MINIO_ROOT_PASSWORD: image_search_password
     command: server --console-address ":9001" /data
+
+  nginx:
+    image: nginx
+    network_mode: host
+    volumes:
+      - ./nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template

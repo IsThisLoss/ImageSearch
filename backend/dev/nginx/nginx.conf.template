@@ -1,14 +1,18 @@
 upstream backend {
-  server ${API_UPSTREAM_ADDR}:${API_UPSTREAM_PORT};
+  server localhost:8000;
 }
 
 upstream s3 {
-  server ${S3_ADDR}:${S3_PORT}
+  server localhost:9000;
+}
+
+upstream frontend {
+  server localhost:8080;
 }
 
 server {
-  listen 80 default_server;
-  listen [::]:80 default_server;
+  listen 10000 default_server;
+  listen [::]:10000 default_server;
 
   root /usr/share/nginx/html;
 
@@ -38,6 +42,13 @@ server {
   }
 
   location / {
-    try_files $uri $uri/ /index.html;
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host  $host;
+    proxy_set_header X-Forwarded-Port  $server_port;
+
+    proxy_pass http://frontend;
   }
 }
+

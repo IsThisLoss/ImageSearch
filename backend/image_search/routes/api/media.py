@@ -15,6 +15,4 @@ async def get_images(file: UploadFile = File(...), _ = Depends(user.get_current_
         file.file._file,
         file.content_type,
     )
-    cfg = config.get_config()
-    url = f'{cfg.s3_endpoint}/{cfg.s3_bucket}{url}'
     return media.UploadResponse(url=url)

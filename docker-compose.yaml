@@ -10,6 +10,8 @@ services:
     environment:
       API_UPSTREAM_ADDR: backend
       API_UPSTREAM_PORT: 8080
+      S3_ADDR: minio
+      S3_PORT: 9000
     restart: always
     networks:
       - image_search
@@ -30,6 +32,7 @@ services:
       - image_search
     depends_on:
        - db
+       - minio
 
   db:
     image: mongo
@@ -44,5 +47,17 @@ services:
       - mongo_db:/data/db
       - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
+  minio:
+    image: minio/minio
+    networks:
+      - image_search
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: image_search
+      MINIO_ROOT_PASSWORD: image_search_password
+    command: server --console-address ":9001" /data
+
 volumes:
   mongo_db:
+  minio_data:
