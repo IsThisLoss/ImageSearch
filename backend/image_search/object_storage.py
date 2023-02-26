@@ -1,7 +1,7 @@
-import io
 import aioboto3
-import uuid
 import functools
+import logging
+import uuid
 
 from .models import config
 
@@ -35,6 +35,20 @@ class ObjectStorage:
                 Key=filename,
             )
         return filename
+
+    async def remove_key(self, key: str):
+        logger = logging.getLogger("uvicorn.error")
+        logger.info('Going to remove %s', key)
+        async with aioboto3.Session().client(
+            's3',
+            endpoint_url=self._cfg.s3_endpoint,
+            aws_access_key_id=self._cfg.s3_access_key,
+            aws_secret_access_key=self._cfg.s3_secret_key,
+        ) as s3:
+            await s3.delete_object(
+                Bucket=self._bucket,
+                Key=key,
+            )
 
 
 @functools.lru_cache()
