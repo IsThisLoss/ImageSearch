@@ -138,4 +138,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 minio_data
+mongo_db
 node_modules
+run

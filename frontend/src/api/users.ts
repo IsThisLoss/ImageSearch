@@ -11,7 +11,6 @@ interface AuthResponse {
 }
 
 async function auth(username: string, password: string): Promise<any> {
-  console.log(username, password)
   const resp = await apiClient.postUrlEncoded<AuthRequest, AuthResponse>('/user/token', {
     username: username,
     password: password,
