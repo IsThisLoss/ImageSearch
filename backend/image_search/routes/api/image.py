@@ -1,9 +1,12 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from ...models.image_storage import get_image_storage
 from ...models.image import InputImage, Image, Images
 from ...models.api_response import ObjectInserted, ApiResponse
+from ...object_storage import get_object_storage
 from .user import get_current_user
 
 
@@ -14,6 +17,8 @@ router = APIRouter(prefix='/api')
 async def get_images(user = Depends(get_current_user)):
     image_storage = get_image_storage()
     images = await image_storage.get_all(user.username)
+    logger = logging.getLogger("uvicorn.error")
+    logger.info('Return %s images', len(images))
     return Images(images=images)
 
 
@@ -48,6 +53,14 @@ async def put_image(id: str, image: InputImage, user = Depends(get_current_user)
 @router.delete('/image/{id}', response_model=ApiResponse)
 async def delete_image(id: str, user = Depends(get_current_user)):
     image_storage = get_image_storage()
-    await image_storage.delete(user.username, id)
+    object_storage = get_object_storage()
+
     result = ApiResponse(status='OK')
+
+    image = await image_storage.get(user.username, id)
+    if not image:
+        return result
+
+    await image_storage.delete(user.username, id)
+    await object_storage.remove_key(image.url)
     return result
