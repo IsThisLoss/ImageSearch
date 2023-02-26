@@ -4,9 +4,14 @@
       <h6 class="center-text font-weight-bold">
           {{image.title}}
       </h6>
-      <a class="btn float-right" target="_blank" rel="nofollow" @click="deleteImage">
+      <div class="float-right">
+      <a class="btn" target="_blank" rel="nofollow" :href="image.url">
+        <i class="fas fa-download"></i>
+      </a>
+      <a class="btn" target="_blank" rel="nofollow" @click="deleteImage">
         <i class="fas fa-trash-alt"></i>
       </a>
+      </div>
     </div>
     <div class="card-body">
       <div class="text-center">
@@ -16,12 +21,11 @@
           :src="image.url"
           alt=""
         >
-        <p>
+        <div>
+          <p v-show="image.description.length > 0">
             {{image.description}}
-        </p>
-        <a target="_blank" rel="nofollow" :href="image.url">
-            Open &rarr;
-        </a>
+          </p>
+        </div>
       </div>
     </div>
   </div>

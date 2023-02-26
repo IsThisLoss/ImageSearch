@@ -17,7 +17,7 @@
               type="text"
               class="form-control"
               placeholder="Title"
-              v-model.trim="title"
+              v-model.trim="image.title"
             />
           </div>
           <div class="form-group mt-2">
@@ -25,19 +25,9 @@
               type="text"
               class="form-control"
               placeholder="Description"
-              v-model.trim="description"
+              v-model.trim="image.description"
             />
           </div>
-          <!--
-          <div class="form-group mt-2">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="URL"
-              v-model.trim="url"
-            />
-          </div>
-          -->
           <input
             v-on:change="handleFileUpload($event)"
             type="file"
@@ -45,8 +35,8 @@
             ref="fileInput"
             accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
           >
-          <button class="mt-2 btn btn-primary btn-block" type="submit">
-              Save
+          <button :disabled="isSubmitDisabled" class="mt-2 btn btn-primary btn-block" type="submit">
+              {{buttonText}}
           </button>
         </form>
       </div>
@@ -60,48 +50,60 @@ import { defineComponent } from 'vue'
 import { InputImage } from '@/api/images'
 import mediaApi from '@/api/media'
 
+interface Data {
+  image: InputImage
+  buttonText: string
+}
+
+const DEFAULT_BUTTON_TEXT = "Save"
+const UPLOADING_BUTTON_TEXT = "Uploading..."
+
 export default defineComponent({
-  data(): InputImage {
+  data(): Data {
     return {
-      title: "",
-      description: "",
-      url: "",
+      image: {
+        title: "",
+        description: "",
+        url: "",
+      },
+      buttonText: DEFAULT_BUTTON_TEXT,
     }
   },
   methods: {
     submit() {
-      if (!this.isValid()) {
-        return
-      }
       const image = {
-        title: this.title,
-        description: this.description,
-        url: this.url,
+        title: this.image.title,
+        description: this.image.description,
+        url: this.image.url,
       }
       this.$emit('submit', image);
       this.clear()
     },
     clear() {
-      this.title = ""
-      this.description = ""
-      this.url = ""
+      this.image.title = ""
+      this.image.description = ""
+      this.image.url = ""
       const fileInput = this.$refs.fileInput as any
       fileInput.value = null
     },
-    isValid(): boolean {
-      if (this.title === "" || this.description == "" || this.url === "") {
-        return false
-      }
-      return true
-    },
     handleFileUpload(event: any) {
+      this.buttonText = UPLOADING_BUTTON_TEXT
       const file = event.target.files[0];
       const data = new FormData();
       data.append('file', file, file.name);
       mediaApi.upload(data).then((resp: string) => {
-        this.url = resp
+        this.image.url = resp
+        this.buttonText = DEFAULT_BUTTON_TEXT
       })
     },
+  },
+  computed: {
+    isSubmitDisabled(): boolean {
+      if (this.image.title === "" || this.image.url === "") {
+        return true
+      }
+      return false
+    }
   },
 })
 </script>

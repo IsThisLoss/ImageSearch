@@ -1,4 +1,4 @@
-import logging
+# import logging
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
@@ -17,8 +17,8 @@ router = APIRouter(prefix='/api')
 async def get_images(user = Depends(get_current_user)):
     image_storage = get_image_storage()
     images = await image_storage.get_all(user.username)
-    logger = logging.getLogger("uvicorn.error")
-    logger.info('Return %s images', len(images))
+    # logger = logging.getLogger("uvicorn.error")
+    # logger.info('Return %s images', len(images))
     return Images(images=images)
 
 

@@ -1,6 +1,6 @@
 import aioboto3
 import functools
-import logging
+# import logging
 import uuid
 
 from .models import config
@@ -37,8 +37,8 @@ class ObjectStorage:
         return filename
 
     async def remove_key(self, key: str):
-        logger = logging.getLogger("uvicorn.error")
-        logger.info('Going to remove %s', key)
+        # logger = logging.getLogger("uvicorn.error")
+        # logger.info('Going to remove %s', key)
         async with aioboto3.Session().client(
             's3',
             endpoint_url=self._cfg.s3_endpoint,
