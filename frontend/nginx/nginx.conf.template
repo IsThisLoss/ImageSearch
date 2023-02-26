@@ -3,19 +3,19 @@ upstream backend {
 }
 
 upstream s3 {
-  server ${S3_ADDR}:${S3_PORT}
+  server ${S3_ADDR}:${S3_PORT};
 }
 
 server {
-  listen 80 default_server;
-  listen [::]:80 default_server;
+  listen ${NGINX_PORT} default_server;
+  listen [::]:${NGINX_PORT} default_server;
 
   root /usr/share/nginx/html;
 
   index index.html index.htm index.nginx-debian.html;
 
   server_name _;
-  client_max_body_size 30M;
+  client_max_body_size 300M;
 
   location /api {
     proxy_set_header Host              $host;

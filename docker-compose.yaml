@@ -1,9 +1,5 @@
 version: "3"
 
-networks:
-  image_search:
-    external: false
-
 services:
   frontend:
     build: ./frontend
@@ -12,13 +8,14 @@ services:
       API_UPSTREAM_PORT: 8080
       S3_ADDR: minio
       S3_PORT: 9000
-    restart: always
+      NGINX_PORT: 10000
     networks:
       - image_search
     ports:
-      - 8080:80
+      - 10000:10000
     depends_on:
        - backend
+    restart: on-failure
 
   backend:
     build: ./backend
@@ -27,12 +24,13 @@ services:
       MONGODB_PASSWORD: image_search_password
       MONGODB_DB: image_search
       MONGODB_HOST: db
-    restart: always
+      S3_ENDPOINT: 'http://minio:9000'
     networks:
       - image_search
     depends_on:
        - db
        - minio
+    restart: on-failure
 
   db:
     image: mongo
@@ -44,20 +42,37 @@ services:
     networks:
       - image_search
     volumes:
-      - mongo_db:/data/db
+      - ./run/mongo_db:/data/db
       - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    restart: on-failure
 
   minio:
     image: minio/minio
     networks:
       - image_search
     volumes:
-      - minio_data:/data
+      - ./run/minio_data:/data
     environment:
       MINIO_ROOT_USER: image_search
       MINIO_ROOT_PASSWORD: image_search_password
-    command: server --console-address ":9001" /data
+    entrypoint: sh
+    command: -c 'mkdir -p /data/image-search && minio server --console-address ":9001" /data'
+    restart: on-failure
 
-volumes:
-  mongo_db:
-  minio_data:
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    networks:
+      - image_search
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 image_search image_search_password;
+      /usr/bin/mc mb myminio/image-search;
+      /usr/bin/mc anonymous set download myminio/image-search;
+      exit 0;
+      "
+
+networks:
+  image_search:
+    external: false
