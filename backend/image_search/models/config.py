@@ -12,8 +12,6 @@ class Settings(BaseSettings):
     mongodb_image_collection: str = 'images'
     mongodb_user_collection: str = 'users'
 
-    web_origin: str = ""
-
     s3_endpoint: str = 'http://localhost:9000'
     s3_access_key: str = 'image_search'
     s3_secret_key: str = 'image_search_password'

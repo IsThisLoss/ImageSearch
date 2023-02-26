@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "image-search"
+dynamic = ["version"]
+description = "Backend for ImageSearch application"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "isthisloss", email = "kopturovdim@gmail.com" },
+]
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+  "aioboto3==10.3.0",
+  "fastapi==0.63.0",
+  "motor==2.3.0",
+  "passlib==1.7.4",
+  "pytesseract==0.3.10",
+  "python-dotenv==0.15.0",
+  "python-jose==3.3.0",
+  "python-multipart==0.0.5",
+  "uvicorn==0.13.3",
+]
+
+[tool.hatch.version]
+path = "image_search/__init__.py"
+
+[project.optional-dependencies]
+dev = [
+  "pip-tools==6.9.0",
+]
+
+[tool.hatch.build]
+include = [
+  "image_search/**/*.py",
+]

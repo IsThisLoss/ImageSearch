@@ -1,9 +1,13 @@
-FROM ubuntu:20.04
+FROM python:3.10
 
-RUN apt update && apt install -y python3 python3-pip
+# install requirments
+COPY requirements.txt /tmp/build/requirements.txt
+RUN python -m pip install -r /tmp/build/requirements.txt
 
-COPY ./ /tmp/image_search
+# install main application
+COPY README.md /tmp/build/README.md
+COPY pyproject.toml /tmp/build/pyproject.toml
+COPY image_search /tmp/build/image_search
+RUN cd /tmp/build && python -m pip install .
 
-RUN pip3 install /tmp/image_search
-
-CMD uvicorn image_search:app --host 0.0.0.0 --port 8080
+CMD ["uvicorn", "image_search:app", "--host", "0.0.0.0", "--port", "8080"]
