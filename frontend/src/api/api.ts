@@ -11,7 +11,7 @@ export class ApiClient {
         responseType: 'json' as const,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          // 'Access-Control-Allow-Origin': '*',
         },
       }
     )
