@@ -10,14 +10,14 @@ services:
     volumes:
     network_mode: host
     volumes:
-      - ./mongo_db:/data/db
+      - ./run/mongo_db:/data/db
       - ../scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   minio:
     image: minio/minio
     network_mode: host
     volumes:
-      - ./minio_data:/data
+      - ./run/minio_data:/data
     environment:
       MINIO_ROOT_USER: image_search
       MINIO_ROOT_PASSWORD: image_search_password
