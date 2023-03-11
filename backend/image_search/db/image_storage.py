@@ -1,8 +1,12 @@
 import typing
-from .image import InputImage, Image
-from ..db import mongo
-from .cv import get_text_from_image_url
-from .config import Settings, get_config
+import time
+
+import pymongo
+
+from ..models.image import InputImage, Image
+from . import mongo
+# from ..models.cv import get_text_from_image_url
+from ..models.config import Settings, get_config
 from bson import ObjectId
 
 from typing import List
@@ -21,32 +25,47 @@ class ImageStorage:
         data['id'] = str(data.pop('_id'))
         return data
 
-    async def get_all(self, username: str) -> List[Image]:
+    async def find(
+        self,
+        username: str,
+        text: typing.Optional[str] = None,
+        offset: int = 0,
+        limit: int = 100,
+    ) -> List[Image]:
+        condition = {'username': username}
+        if text:
+            text_condition = {'$text': {'$search': text}}
+            condition.update(text_condition)
         cursor = self.images.find(
-            {'username': username},
-        )
+            condition,
+        ).sort(
+            'ts', pymongo.DESCENDING,
+        ).skip(offset).limit(limit)
+
         result = []
         async for entry in cursor:
             result.append(Image(**self.to_model_id(entry)))
         return result
 
     async def get(self, username: str, id: str) -> typing.Optional[Image]:
-        data: dict = await self.images.find_one(
+        data = await self.images.find_one(
             {
                 '_id': ObjectId(id),
                 'username': username,
             },
         )
-        # FIXME
+        if not data:
+            return None
         return Image(**self.to_model_id(data))
 
     async def put(self, username: str, image: InputImage) -> str:
-        cv_text = await get_text_from_image_url(image.url)
         url: str = image.url
         data: dict = image.dict()
         # TODO Вынести отдельно
         # TODO Распозновать текст асинхронно
-        data.update({'cv_text': cv_text})
+        # cv_text = await get_text_from_image_url(image.url)
+        # data.update({'cv_text': cv_text})
+        data['ts'] = int(time.time())
         result = await self.images.find_one_and_update(
             {'url': url, 'username': username},
             {'$setOnInsert': data},
@@ -56,28 +75,18 @@ class ImageStorage:
         return str(result['_id'])
 
     async def update(self, username: str, id: str, image: InputImage) -> bool:
+        data = image.dict()
+        data['ts'] = int(time.time())
         result = await self.images.update_one(
             {'_id': ObjectId(id), 'username': username},
-            {'$set': image.dict()},
+            {'$set': data},
         )
         return result.modified_count > 0
 
     async def delete(self, username: str, id: str):
-        await self.images.delete_many({'_id': ObjectId(id), 'username': username})
-
-    async def search(self, username: str, text: str) -> List[Image]:
-        cursor = self.images.find(
-            {
-                '$text': {
-                    '$search': text,
-                },
-                'username': username,
-            }
+        await self.images.delete_many(
+            {'_id': ObjectId(id), 'username': username},
         )
-        result = []
-        async for entry in cursor:
-            result.append(Image(**self.to_model_id(entry)))
-        return result
 
 
 @lru_cache()

@@ -12,6 +12,7 @@ class InputImage(BaseModel):
 class Image(InputImage):
     id: str
     cv_text: Optional[str]
+    ts: Optional[int]
 
 
 class Images(BaseModel):
