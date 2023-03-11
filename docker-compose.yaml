@@ -27,6 +27,7 @@ services:
       S3_ENDPOINT: 'http://minio:9000'
       S3_ACCESS_KEY: ${MINIO_ROOT_USER:-image_search}
       S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-image_search_password}
+      SECRET: ${SECRET:secret}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-120}
     networks:
       - image_search
