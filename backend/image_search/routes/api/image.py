@@ -1,14 +1,13 @@
-# import logging
 import typing
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 
-from ...db.image_storage import get_image_storage
-from ...models.image import InputImage, Image, Images
+from ...db import Database, get_db
 from ...models.api_response import ObjectInserted, ApiResponse
-from ...object_storage import get_object_storage
-from .user import get_current_user
+from ...models.image import InputImage, Image, Images
+from ...object_storage import ObjectStorage, get_object_storage
+from .user import User, get_current_user
 
 
 router = APIRouter(prefix='/api')
@@ -19,19 +18,25 @@ async def get_images(
     text: typing.Optional[str] = None,
     offset: int = 0,
     limit: int = 100,
-    user = Depends(get_current_user),
+    user: User = Depends(get_current_user),
+    db: Database = Depends(get_db),
 ):
-    image_storage = get_image_storage()
-    images = await image_storage.find(user.username, text, offset, limit)
-    # logger = logging.getLogger("uvicorn.error")
-    # logger.info('Return %s images', len(images))
+    images = await db.images.find(
+        user.username,
+        text,
+        offset,
+        limit,
+    )
     return Images(images=images)
 
 
 @router.get('/image/{id}', response_model=Image)
-async def get_image(id: str, user = Depends(get_current_user)):
-    image_storage = get_image_storage()
-    image = await image_storage.get(user.username, id)
+async def get_image(
+    id: str,
+    user: User = Depends(get_current_user),
+    db: Database = Depends(get_db),
+):
+    image = await db.images.get(user.username, id)
     if not image:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -40,33 +45,46 @@ async def get_image(id: str, user = Depends(get_current_user)):
 
 
 @router.post('/image', response_model=ObjectInserted)
-async def post_image(image: InputImage, user = Depends(get_current_user)):
-    image_storage = get_image_storage()
-    inserted_id = await image_storage.put(user.username, image)
+async def post_image(
+    image: InputImage,
+    user: User = Depends(get_current_user),
+    db: Database = Depends(get_db),
+):
+    inserted_id = await db.images.put(user.username, image)
     result = ObjectInserted(status='OK', id=inserted_id)
     return result
 
 
 @router.put('/image/{id}', response_model=ObjectInserted)
-async def put_image(id: str, image: InputImage, user = Depends(get_current_user)):
-    image_storage = get_image_storage()
-    status = await image_storage.update(user, id, image)
+async def put_image(
+    id: str,
+    image: InputImage,
+    user: User = Depends(get_current_user),
+    db: Database = Depends(get_db),
+):
+    status = await db.images.update(user.username, id, image)
     if status:
         return ObjectInserted(status='OK', id=id)
-    return JSONResponse(status_code=404, content=ObjectInserted(status='NOT FOUND', id=id).dict())
+    body = ObjectInserted(status='NOT FOUND', id=id).dict()
+    return JSONResponse(
+        status_code=404,
+        content=body,
+    )
 
 
 @router.delete('/image/{id}', response_model=ApiResponse)
-async def delete_image(id: str, user = Depends(get_current_user)):
-    image_storage = get_image_storage()
-    object_storage = get_object_storage()
-
+async def delete_image(
+    id: str,
+    user: User = Depends(get_current_user),
+    db: Database = Depends(get_db),
+    object_storage: ObjectStorage = Depends(get_object_storage),
+):
     result = ApiResponse(status='OK')
 
-    image = await image_storage.get(user.username, id)
+    image = await db.images.get(user.username, id)
     if not image:
         return result
 
-    await image_storage.delete(user.username, id)
+    await db.images.delete(user.username, id)
     await object_storage.remove_key(image.url)
     return result

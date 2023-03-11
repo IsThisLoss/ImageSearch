@@ -1,11 +1,11 @@
+import functools
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import TEXT
 
-from functools import lru_cache
 from ..models.config import Settings, get_config
 
 
-@lru_cache()
+@functools.lru_cache()
 def get_client():
     config: Settings = get_config()
     client = AsyncIOMotorClient(
