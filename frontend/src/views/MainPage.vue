@@ -43,7 +43,7 @@ interface Data {
   text?: string
 }
 
-const LIMIT = 5
+const LIMIT = 10
 
 export default defineComponent({
   name: 'MainPage',
