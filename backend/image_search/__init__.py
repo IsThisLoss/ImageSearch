@@ -5,7 +5,7 @@ from .routes import app
 from .db import mongo
 
 
-__version__ = "1.0.4"
+__version__ = "2.0.0"
 
 
 @app.on_event('startup')

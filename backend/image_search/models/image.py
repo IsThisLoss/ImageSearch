@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+import typing
 
-from typing import Optional, List
+from pydantic import BaseModel
 
 
 class InputImage(BaseModel):
@@ -11,9 +11,9 @@ class InputImage(BaseModel):
 
 class Image(InputImage):
     id: str
-    cv_text: Optional[str]
-    ts: Optional[int]
+    cv_text: typing.Optional[str]
+    ts: typing.Optional[int]
 
 
 class Images(BaseModel):
-    images: List[Image]
+    images: typing.List[Image]

@@ -1,24 +1,22 @@
-import typing
 import time
+import typing
 
-import pymongo
-
-from ..models.image import InputImage, Image
-from . import mongo
-# from ..models.cv import get_text_from_image_url
-from ..models.config import Settings, get_config
 from bson import ObjectId
+import pymongo
+import motor.motor_asyncio as motor
 
-from typing import List
-from functools import lru_cache
+from ..models.config import Settings
+from ..models.image import InputImage, Image
 
 
-class ImageStorage:
-    def __init__(self):
-        client = mongo.get_client()
-        config: Settings = get_config()
-        db = client[config.mongodb_db]
-        self.images = db[config.mongodb_image_collection]
+class Images:
+    def __init__(
+        self,
+        client: motor.AsyncIOMotorClient,
+        settings: Settings,
+    ):
+        db = client[settings.mongodb_db]
+        self.images = db[settings.mongodb_image_collection]
 
     @staticmethod
     def to_model_id(data: dict):
@@ -31,11 +29,12 @@ class ImageStorage:
         text: typing.Optional[str] = None,
         offset: int = 0,
         limit: int = 100,
-    ) -> List[Image]:
-        condition = {'username': username}
+    ) -> typing.List[Image]:
+        condition: dict = {'username': username}
         if text:
-            text_condition = {'$text': {'$search': text}}
+            text_condition: dict = {'$text': {'$search': text}}
             condition.update(text_condition)
+
         cursor = self.images.find(
             condition,
         ).sort(
@@ -45,6 +44,7 @@ class ImageStorage:
         result = []
         async for entry in cursor:
             result.append(Image(**self.to_model_id(entry)))
+
         return result
 
     async def get(self, username: str, id: str) -> typing.Optional[Image]:
@@ -87,8 +87,3 @@ class ImageStorage:
         await self.images.delete_many(
             {'_id': ObjectId(id), 'username': username},
         )
-
-
-@lru_cache()
-def get_image_storage() -> ImageStorage:
-    return ImageStorage()

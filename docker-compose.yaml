@@ -20,11 +20,13 @@ services:
   backend:
     build: ./backend
     environment:
-      MONGODB_LOGIN: image_search
-      MONGODB_PASSWORD: image_search_password
-      MONGODB_DB: image_search
+      MONGODB_LOGIN: ${MONGODB_LOGIN:-image_search}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD:-image_search_password}
+      MONGODB_DB: ${MONGODB_DB:-image_search}
       MONGODB_HOST: db
       S3_ENDPOINT: 'http://minio:9000'
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-image_search}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-image_search_password}
     networks:
       - image_search
     depends_on:
@@ -36,9 +38,9 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
-      MONGO_INITDB_DATABASE: image_search
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-admin}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-image_search}
     networks:
       - image_search
     volumes:
@@ -53,8 +55,8 @@ services:
     volumes:
       - ./run/minio_data:/data
     environment:
-      MINIO_ROOT_USER: image_search
-      MINIO_ROOT_PASSWORD: image_search_password
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-image_search}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-image_search_password}
     entrypoint: sh
     command: -c 'mkdir -p /data/image-search && minio server --console-address ":9001" /data'
     restart: on-failure
