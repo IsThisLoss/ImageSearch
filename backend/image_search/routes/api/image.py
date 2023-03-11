@@ -1,9 +1,10 @@
 # import logging
+import typing
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 
-from ...models.image_storage import get_image_storage
+from ...db.image_storage import get_image_storage
 from ...models.image import InputImage, Image, Images
 from ...models.api_response import ObjectInserted, ApiResponse
 from ...object_storage import get_object_storage
@@ -14,9 +15,14 @@ router = APIRouter(prefix='/api')
 
 
 @router.get('/image', response_model=Images)
-async def get_images(user = Depends(get_current_user)):
+async def get_images(
+    text: typing.Optional[str] = None,
+    offset: int = 0,
+    limit: int = 100,
+    user = Depends(get_current_user),
+):
     image_storage = get_image_storage()
-    images = await image_storage.get_all(user.username)
+    images = await image_storage.find(user.username, text, offset, limit)
     # logger = logging.getLogger("uvicorn.error")
     # logger.info('Return %s images', len(images))
     return Images(images=images)

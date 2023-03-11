@@ -28,16 +28,16 @@ class ImagesApi {
     this.client = client
   }
 
-  async getAll(): Promise<Images> {
-    return this.client.get<Images>('/image')
+  async find(offset: number, limit: number, text?: string): Promise<Images> {
+    let req = `/image?offset=${offset}&limit=${limit}`
+    if (text) {
+      req += `&text=${text}`
+    }
+    return this.client.get<Images>(req)
   }
 
   async create(image: InputImage): Promise<Response> {
     return this.client.post<InputImage, Response>('/image', image)
-  }
-
-  async search(text: string): Promise<Images> {
-    return this.client.get<Images>(`/search/image?text=${text}`)
   }
 
   async delete(id: string): Promise<Response> {
