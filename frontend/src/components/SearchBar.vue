@@ -9,7 +9,7 @@
         v-model.trim="searchText"
       />
     <div class="input-group-append">
-        <button class="btn btn-primary my-2 my-sm-0" type="submit">
+        <button class="btn btn-primary" type="submit">
             <i class="fas fa-search fa-sm"></i>
         </button>
     </div></div>
