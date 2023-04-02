@@ -1,12 +1,11 @@
 <template>
-<div class="card shadow-lg">
+<div class="card shadow mb-4">
   <div class="card-header py-3">
     <h6 class="center-text font-weight-bold">
         Add new image
     </h6>
   </div>
-  <div class="card-body p-0">
-    <div class="p-5">
+  <div class="card-body p-5">
       <div class="text-center">
         <h4 class="text-gray-900 mb-4">
             New image
@@ -35,12 +34,11 @@
             ref="fileInput"
             accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
           >
-          <button :disabled="isSubmitDisabled" class="mt-2 btn btn-primary btn-block" type="submit">
+          <button :disabled="isSubmitDisabled" class="mt-2 btn btn-primary" type="submit">
               {{buttonText}}
           </button>
         </form>
       </div>
-    </div>
   </div>
 </div>
 </template>

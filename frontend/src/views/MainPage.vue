@@ -7,13 +7,12 @@
     <h3 class="text-center my-4 text-gray-800">
         Images
     </h3>
-    <div class="row">
-      <div class="col-lg-4 mb-4">
+    <div class="card-columns">
+      <div>
         <NewImage @submit="createImage"/>
       </div>
       <div
         v-for="image in images" :key="image.title"
-        class="col-lg-4 mb-4"
       >
         <ImageCard :image="image" @deleteImage="deleteImage"/>
       </div>
