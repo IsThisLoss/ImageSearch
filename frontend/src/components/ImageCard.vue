@@ -5,7 +5,7 @@
           {{image.title}}
       </h6>
       <div class="float-right">
-        <a class="btn" target="_blank" rel="nofollow" :href="image.url">
+        <a class="btn" target="_blank" rel="nofollow" :href="image.links.orig">
           <i class="fas fa-download"></i>
         </a>
         <a class="btn" target="_blank" rel="nofollow" @click="deleteImage">
@@ -18,7 +18,7 @@
         <img
           class="img-fluid px-3 px-sm-4"
           style="width: 25rem;"
-          :src="image.url"
+          :src="image.links.previews.medium"
           alt=""
         >
         <div>

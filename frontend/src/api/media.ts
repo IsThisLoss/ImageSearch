@@ -1,7 +1,7 @@
 import apiClient, {ApiClient} from './api'
 
 interface UploadResponse {
-  url: string
+  media_id: string
 }
 
 class MediaApi {
@@ -13,7 +13,7 @@ class MediaApi {
 
   async upload(form: FormData): Promise<string> {
     const resp = await this.client.postForm<FormData, UploadResponse>("/media", form)
-    return resp.url
+    return resp.media_id
   }
 }
 
