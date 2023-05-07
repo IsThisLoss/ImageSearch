@@ -1,3 +1,4 @@
+import asyncio
 import io
 
 from fastapi import APIRouter, File, UploadFile, Depends
@@ -45,23 +46,24 @@ async def upload_media(
     _ = Depends(user.get_current_user),
 ):
     image_buf: bytes = file.file.read()
-
-    orig = await object_storage.upload_file(
-        file=io.BytesIO(image_buf),
-        extention=get_file_extention(file.content_type),
-    )
-
     preview_buf = create_preview(image_buf)
-    medium = await object_storage.upload_file(
-        file=io.BytesIO(preview_buf),
-        extention=PREVIEW_EXTENTION,
+
+    links = await asyncio.gather(
+        object_storage.upload_file(
+            file=io.BytesIO(image_buf),
+            extention=get_file_extention(file.content_type),
+        ),
+        object_storage.upload_file(
+            file=io.BytesIO(preview_buf),
+            extention=PREVIEW_EXTENTION,
+        ),
     )
 
     image_link = db.image_links.ImageLink(
         id=None,
-        orig=orig,
+        orig=links[0],
         previews=db.image_links.ImagePreview(
-            medium=medium,
+            medium=links[1],
         ),
     )
     media_id = await database.image_links.put(image_link)
