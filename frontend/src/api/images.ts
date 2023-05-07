@@ -3,14 +3,23 @@ import apiClient, {ApiClient} from './api'
 export interface InputImage {
   title: string
   description: string
-  url: string
+  media_id: string
+}
+
+export interface ImagePreview {
+  medium: string
+}
+
+export interface ImageLink {
+  orig: string
+  previews: ImagePreview
 }
 
 export interface Image {
   id: string
   title: string
   description: string
-  url: string
+  links: ImagePreview
 }
 
 export interface Response {

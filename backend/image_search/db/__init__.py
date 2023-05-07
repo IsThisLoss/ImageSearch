@@ -3,6 +3,7 @@ import dataclasses
 
 from . import mongo
 from .images import Images
+from .image_links import ImageLinks
 from .users import Users
 
 from ..models.config import get_config
@@ -11,6 +12,7 @@ from ..models.config import get_config
 @dataclasses.dataclass
 class Database:
     images: Images
+    image_links: ImageLinks
     users: Users
 
 
@@ -23,6 +25,10 @@ def get_db():
         client=client,
         settings=settings,
     )
+    image_links = ImageLinks(
+        client=client,
+        settings=settings,
+    )
     users = Users(
         client=client,
         settings=settings,
@@ -30,5 +36,6 @@ def get_db():
 
     return Database(
         images=images,
+        image_links=image_links,
         users=users,
     )

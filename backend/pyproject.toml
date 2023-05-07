@@ -18,8 +18,12 @@ classifiers = [
 ]
 dependencies = [
   "aioboto3==10.3.0",
+  "dacite==1.8.0",
   "fastapi==0.63.0",
+  "imutils==0.5.4",
   "motor==2.3.0",
+  "numpy==1.24.3",
+  "opencv-python==4.7.0.72",
   "passlib==1.7.4",
   "pytesseract==0.3.10",
   "python-dotenv==0.15.0",

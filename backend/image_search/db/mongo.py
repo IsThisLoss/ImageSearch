@@ -1,7 +1,8 @@
-import functools
 from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo import TEXT
+import functools
+import pymongo
 
+from .images import Images
 from ..models.config import Settings, get_config
 
 
@@ -24,10 +25,16 @@ async def create_indexes():
     config: Settings = get_config()
     client = get_client()
     db = client[config.mongodb_db]
-    images = db[config.mongodb_image_collection]
+    images = db[Images.COLLECTION_NAME]
     await images.create_index([
-        ('title', TEXT),
-        ('description', TEXT),
-        ('cv_text', TEXT),
+        ('title', pymongo.TEXT),
+        ('description', pymongo.TEXT),
+        ('cv_text', pymongo.TEXT),
     ])
-    await images.create_index('url', unique=True)
+    await images.create_index(
+        [
+            ('username', pymongo.ASCENDING),
+            ('links.orig', pymongo.ASCENDING),
+        ],
+        unique=True,
+    )

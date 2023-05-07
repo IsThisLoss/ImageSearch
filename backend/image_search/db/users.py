@@ -1,19 +1,29 @@
 import typing
+import dataclasses
 
 import motor.motor_asyncio as motor
 
 from ..models.config import Settings
-from ..models.user import User
 
 
+# DTOs
+
+@dataclasses.dataclass
+class User:
+    username: str
+
+
+# DAO
 class Users:
+    COLLECTION_NAME = 'users'
+
     def __init__(
         self,
         client: motor.AsyncIOMotorClient,
         settings: Settings,
     ):
         db = client[settings.mongodb_db]
-        self.users = db[settings.mongodb_user_collection]
+        self.users = db[self.COLLECTION_NAME]
 
     async def put(self, username: str, hashed_password: str):
         data = {

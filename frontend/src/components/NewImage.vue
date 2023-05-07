@@ -62,7 +62,7 @@ export default defineComponent({
       image: {
         title: "",
         description: "",
-        url: "",
+        media_id: "",
       },
       buttonText: DEFAULT_BUTTON_TEXT,
     }
@@ -72,7 +72,7 @@ export default defineComponent({
       const image = {
         title: this.image.title,
         description: this.image.description,
-        url: this.image.url,
+        media_id: this.image.media_id,
       }
       this.$emit('submit', image);
       this.clear()
@@ -80,7 +80,7 @@ export default defineComponent({
     clear() {
       this.image.title = ""
       this.image.description = ""
-      this.image.url = ""
+      this.image.media_id = ""
       const fileInput = this.$refs.fileInput as any
       fileInput.value = null
     },
@@ -90,14 +90,14 @@ export default defineComponent({
       const data = new FormData();
       data.append('file', file, file.name);
       mediaApi.upload(data).then((resp: string) => {
-        this.image.url = resp
+        this.image.media_id = resp
         this.buttonText = DEFAULT_BUTTON_TEXT
       })
     },
   },
   computed: {
     isSubmitDisabled(): boolean {
-      if (this.image.title === "" || this.image.url === "") {
+      if (this.image.title === "" || this.image.media_id === "") {
         return true
       }
       return false

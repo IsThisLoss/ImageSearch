@@ -1,7 +1,8 @@
+import typing
+import hashlib
+
 import aioboto3
 import functools
-# import logging
-import uuid
 
 from .models import config
 
@@ -12,17 +13,13 @@ class ObjectStorage:
         self._bucket = self._cfg.s3_bucket
         self._prefix = self._cfg.media_prefix
     
-    def _gen_filename(self, content_type: str) -> str:
-        file_id = str(uuid.uuid4())
-        ext = ''
-        if content_type == 'image/jpeg':
-            ext = '.jpg'
-        elif content_type == 'image/png':
-            ext = '.png'
-        return f'{self._prefix}/{file_id}{ext}'
+    def _gen_filename(self, file: typing.IO, extention: str) -> str:
+        file_id = hashlib.sha1(file.read()).hexdigest()
+        file.seek(0)
+        return f'{self._prefix}/{file_id}{extention}'
 
-    async def upload_file(self, file, content_type) -> str:
-        filename = self._gen_filename(content_type)
+    async def upload_file(self, file: typing.IO, extention: str) -> str:
+        filename = self._gen_filename(file, extention)
         async with aioboto3.Session().client(
             's3',
             endpoint_url=self._cfg.s3_endpoint,
@@ -37,8 +34,6 @@ class ObjectStorage:
         return filename
 
     async def remove_key(self, key: str):
-        # logger = logging.getLogger("uvicorn.error")
-        # logger.info('Going to remove %s', key)
         async with aioboto3.Session().client(
             's3',
             endpoint_url=self._cfg.s3_endpoint,
