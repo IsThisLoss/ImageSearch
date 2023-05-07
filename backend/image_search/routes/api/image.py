@@ -1,3 +1,5 @@
+import asyncio
+import logging
 import typing
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -120,6 +122,13 @@ async def delete_image(
         return result
 
     await database.images.delete(user.username, id)
-    await object_storage.remove_key(image.links.orig)
-    await object_storage.remove_key(image.links.previews.medium)
+
+    try:
+        await asyncio.gather(
+            object_storage.remove_key(image.links.orig),
+            object_storage.remove_key(image.links.previews.medium),
+        )
+    except Exception as _:
+        logging.exception('Failed to delete images')
+
     return result
