@@ -23,10 +23,12 @@ services:
       MONGODB_LOGIN: ${MONGODB_LOGIN:-image_search}
       MONGODB_PASSWORD: ${MONGODB_PASSWORD:-image_search_password}
       MONGODB_DB: ${MONGODB_DB:-image_search}
-      MONGODB_HOST: db
-      S3_ENDPOINT: 'http://minio:9000'
-      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-image_search}
-      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-image_search_password}
+      MONGODB_HOST: ${MONGODB_HOST:-db}
+      MONGODB_PORT: ${MONGODB_PORT:-27017}
+      S3_ENDPOINT: ${S3_ENDPOINT:-'http://minio:9000'}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-image_search}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-image_search_password}
+      S3_BUCKET: ${S3_BUCKET:-image-search}
       SECRET: ${SECRET:-secret}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-120}
     networks:
