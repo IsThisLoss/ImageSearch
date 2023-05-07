@@ -2,13 +2,13 @@ import asyncio
 import getpass
 import sys
 
-from .db import users
+from . import db
 from . import auth
 
 
 async def upsert_user(username: str, raw_password: str):
     hashed_password = auth.get_password_hash(raw_password)
-    user_db = users.get_users()
+    user_db = db.get_db().users
     await user_db.put(username, hashed_password)
 
 

@@ -1,6 +1,7 @@
 FROM python:3.10
 
 # install requirments
+RUN apt update && apt install ffmpeg libsm6 libxext6 -y
 COPY requirements.txt /tmp/build/requirements.txt
 RUN python -m pip install -r /tmp/build/requirements.txt
 
