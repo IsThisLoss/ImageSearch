@@ -7,11 +7,11 @@
     <h3 class="text-center my-4 text-gray-800">
         Images
     </h3>
-    <div class="card-columns">
-      <div>
+    <div class="row">
+      <div class="col-lg-4 mb-4">
         <NewImage @submit="createImage"/>
       </div>
-      <div v-for="image in images" :key="image.id">
+      <div v-for="image in images" :key="image.id" class="col-lg-4 mb-4">
         <ImageCard :image="image" @deleteImage="deleteImage"/>
       </div>
     </div>
@@ -129,3 +129,35 @@ export default defineComponent({
   },
 });
 </script>
+
+
+<style scoped>
+.masonry { 
+  display: flex;
+  flex-flow: row wrap;
+  margin-left: -8px; /* Adjustment for the gutter */
+}
+
+.masonry-brick {
+  flex: auto;
+  height: 250px;
+  min-width: 150px;
+  margin: 0 8px 8px 0; /* Some gutter */
+}
+
+.masonry-brick {
+  &:nth-child(4n+1){
+     width: 250px;
+  }
+  &:nth-child(4n+2){
+     width: 325px;
+  }
+  &:nth-child(4n+3){
+     width: 180px;
+  }
+  &:nth-child(4n+4){
+     width: 380px;
+  }
+}
+
+</style>
