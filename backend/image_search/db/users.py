@@ -30,7 +30,7 @@ class Users:
             'username': username,
             'hashed_password': hashed_password,
         }
-        await self.users.find_one_and_update(
+        await self.users.find_one_and_replace(
             {'username': username},
             {'$setOnInsert': data},
             new=True,

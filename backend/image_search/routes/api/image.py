@@ -7,12 +7,14 @@ from fastapi.responses import JSONResponse
 
 from . import models
 from ... import db
+from ... import logs
 from ... import object_storage
 from ...models import config
 from .user import User, get_current_user
 
 
 router = APIRouter(prefix='/api')
+logger = logs.get_logger()
 
 
 def to_models(
@@ -54,6 +56,7 @@ async def get_images(
     result = []
     for image in images:
         result.append(to_models(image,image_domain))
+    logger.info('Found %s images', len(result))
     return models.Images(images=result)
 
 
@@ -115,6 +118,7 @@ async def delete_image(
     database: db.Database = Depends(db.get_db),
     object_storage: object_storage.ObjectStorage = Depends(object_storage.get_object_storage),
 ):
+    logger.info('Going to delete %s', id)
     result = models.ApiResponse(status='OK')
 
     image = await database.images.get(user.username, id)
@@ -129,6 +133,6 @@ async def delete_image(
             object_storage.remove_key(image.links.previews.medium),
         )
     except Exception as _:
-        logging.exception('Failed to delete images')
+        logger.exception('Failed to delete images')
 
     return result

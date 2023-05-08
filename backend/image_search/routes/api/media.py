@@ -42,18 +42,18 @@ def create_preview(image_buf: bytes) -> bytes:
 async def upload_media(
     file: UploadFile = File(...),
     database: db.Database = Depends(db.get_db),
-    object_storage: object_storage.ObjectStorage = Depends(object_storage.get_object_storage),
+    objects: object_storage.ObjectStorage = Depends(object_storage.get_object_storage),
     _ = Depends(user.get_current_user),
 ):
     image_buf: bytes = file.file.read()
-    preview_buf = create_preview(image_buf)
+    preview_buf: bytes = create_preview(image_buf)
 
     links = await asyncio.gather(
-        object_storage.upload_file(
+        objects.upload_file(
             file=io.BytesIO(image_buf),
             extention=get_file_extention(file.content_type),
         ),
-        object_storage.upload_file(
+        objects.upload_file(
             file=io.BytesIO(preview_buf),
             extention=PREVIEW_EXTENTION,
         ),
