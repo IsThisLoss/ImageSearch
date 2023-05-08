@@ -70,7 +70,7 @@ class Images:
         ).sort(
             (
                 ('ts', pymongo.DESCENDING),
-                ('id', pymongo.DESCENDING),
+                ('_id', pymongo.DESCENDING),
             )
         ).skip(offset).limit(limit)
 
