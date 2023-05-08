@@ -20,7 +20,7 @@ class ImageLink:
     id: typing.Optional[str]
     orig: str
     previews: ImagePreview
-    ts: int = utils.now()
+    ts: int = dataclasses.field(default_factory=utils.now)
 
     def as_dict(self):
         return utils.as_dict(self)

@@ -31,7 +31,7 @@ class Image:
     description: str
     links: ImageLinks
     cv_text: typing.Optional[str] = None
-    ts: int = utils.now()
+    ts: int = dataclasses.field(default_factory=utils.now)
 
     def as_dict(self):
         return utils.as_dict(self)
@@ -61,15 +61,17 @@ class Images:
         offset: int = 0,
         limit: int = 100,
     ) -> typing.List[Image]:
-        condition: dict = {'username': username}
+        condition: typing.Dict[str, typing.Any] = {'username': username}
         if text:
-            text_condition: dict = {'$text': {'$search': text}}
-            condition.update(text_condition)
+            condition['$text'] = {'$search': text}
 
         cursor = self.images.find(
             condition,
         ).sort(
-            'ts', pymongo.DESCENDING,
+            (
+                ('ts', pymongo.DESCENDING),
+                ('id', pymongo.DESCENDING),
+            )
         ).skip(offset).limit(limit)
 
         result = []
