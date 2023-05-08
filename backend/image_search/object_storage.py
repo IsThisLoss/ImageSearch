@@ -1,5 +1,6 @@
+# import hashlib
 import typing
-import hashlib
+import uuid
 
 import aioboto3
 import functools
@@ -13,9 +14,10 @@ class ObjectStorage:
         self._bucket = self._cfg.s3_bucket
         self._prefix = self._cfg.media_prefix
     
-    def _gen_filename(self, file: typing.IO, extention: str) -> str:
-        file_id = hashlib.sha1(file.read()).hexdigest()
-        file.seek(0)
+    def _gen_filename(self, _: typing.IO, extention: str) -> str:
+        # file_id = hashlib.sha1(file.read()).hexdigest()
+        # file.seek(0)
+        file_id = uuid.uuid4().hex
         return f'{self._prefix}/{file_id}{extention}'
 
     async def upload_file(self, file: typing.IO, extention: str) -> str:

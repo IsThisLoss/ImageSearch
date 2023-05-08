@@ -11,9 +11,7 @@
       <div>
         <NewImage @submit="createImage"/>
       </div>
-      <div
-        v-for="image in images" :key="image.title"
-      >
+      <div v-for="image in images" :key="image.id">
         <ImageCard :image="image" @deleteImage="deleteImage"/>
       </div>
     </div>

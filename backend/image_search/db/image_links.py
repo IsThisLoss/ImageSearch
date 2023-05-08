@@ -1,4 +1,5 @@
 import typing
+import datetime
 import dataclasses
 
 from bson import ObjectId
@@ -20,7 +21,7 @@ class ImageLink:
     id: typing.Optional[str]
     orig: str
     previews: ImagePreview
-    ts: int = utils.now()
+    ts: int = dataclasses.field(default_factory=utils.now)
 
     def as_dict(self):
         return utils.as_dict(self)
@@ -66,3 +67,21 @@ class ImageLinks:
         await self._image_links.delete_many(
             {'_id': ObjectId(id)},
         )
+
+    async def delete_many(self, ids: typing.List[str]):
+        obj_ids = list(map(ObjectId, ids))
+        await self._image_links.delete_many(
+            {'_id': {'$in': obj_ids}},
+        )
+
+    async def find_older_than(self, ts: int) -> typing.List[ImageLink]:
+        data = self._image_links.find(
+            {'ts': {'$lt': ts}},
+        )
+        result = []
+        async for item in data:
+            result.append(dacite.from_dict(
+                data_class=ImageLink,
+                data=self.to_model_id(item),
+            ))
+        return result

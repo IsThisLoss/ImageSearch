@@ -1,14 +1,16 @@
 from datetime import datetime, timedelta
-import logging
 import typing
 
-from passlib.context import CryptContext
 from jose import JWTError, jwt
+from passlib.context import CryptContext
 
+from . import logs
 
 ALGORITHM = "HS256"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+logger = logs.get_logger()
 
 
 def create_access_token(
@@ -32,7 +34,7 @@ def decode_username(token: str, secret: str) -> typing.Optional[str]:
         payload = jwt.decode(token, secret, algorithms=[ALGORITHM])
         username = payload.get("sub")
     except JWTError:
-        logging.exception("Failed to decode JWT")
+        logger.exception("Failed to decode JWT")
         pass
 
     return username

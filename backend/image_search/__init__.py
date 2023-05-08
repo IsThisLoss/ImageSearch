@@ -1,19 +1,16 @@
-# import logging
+from . import logs
 
+logs.init()
 
-from .routes import app
+from . import jobs
 from .db import mongo
+from .routes import app
 
 
-__version__ = "2.0.0"
+__version__ = "3.0.0"
 
 
 @app.on_event('startup')
-async def init_db():
-    # logger = logging.getLogger("uvicorn.error")
-    # handler = logging.StreamHandler()
-    # handler.setFormatter(
-    #    logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    # )
-    # logger.addHandler(handler)
+async def startup():
+    jobs.init()
     await mongo.create_indexes()
