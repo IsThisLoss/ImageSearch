@@ -5,10 +5,13 @@
           {{image.title}}
       </h6>
       <div class="float-right">
-        <a class="btn" target="_blank" rel="nofollow" :href="image.links.orig">
+        <a class="btn btn-light" role="button" @click="copyToClipboard(image.links.orig)">
+          <i class="fas fa-clipboard" aria-hidden="true"></i>
+        </a>
+        <a class="btn btn-light" role="button" target="_blank" rel="nofollow" :href="image.links.orig">
           <i class="fas fa-download"></i>
         </a>
-        <a class="btn" target="_blank" rel="nofollow" @click="deleteImage">
+        <a class="btn btn-light" role="button" @click="deleteImage">
           <i class="fas fa-trash-alt"></i>
         </a>
       </div>
@@ -46,7 +49,13 @@ export default defineComponent({
   methods: {
     deleteImage() {
       this.$emit('deleteImage', this.image.id)
+    },
+    copyToClipboard(link: string) {
+      if (!link.startsWith('http')) {
+        link = location.host + link
+      }
+      navigator.clipboard.writeText(link)
     }
-  }
+  },
 });
 </script>
