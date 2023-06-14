@@ -22,9 +22,9 @@ class ObjectStorage:
 
 
     def _content_type(self, extention: str) -> typing.Optional[str]:
-        if extention in ('jpg', 'jpeg'):
+        if extention in ('.jpg', '.jpeg'):
             return 'image/jpeg'
-        if extention == 'png':
+        if extention == '.png':
             return 'image/png'
         return None
 
