@@ -20,6 +20,14 @@ class ObjectStorage:
         file_id = uuid.uuid4().hex
         return f'{self._prefix}/{file_id}{extention}'
 
+
+    def _content_type(self, extention: str) -> typing.Optional[str]:
+        if extention in ('jpg', 'jpeg'):
+            return 'image/jpeg'
+        if extention == 'png':
+            return 'image/png'
+        return None
+
     async def upload_file(self, file: typing.IO, extention: str) -> str:
         filename = self._gen_filename(file, extention)
         async with aioboto3.Session().client(
@@ -28,11 +36,15 @@ class ObjectStorage:
             aws_access_key_id=self._cfg.s3_access_key,
             aws_secret_access_key=self._cfg.s3_secret_key,
         ) as s3:
-            await s3.put_object(
-                Body=file,
-                Bucket=self._bucket,
-                Key=filename,
-            )
+            params = {
+                'Body': file,
+                'Bucket': self._bucket,
+                'Key': filename,
+            }
+            content_type = self._content_type(extention)
+            if content_type:
+                params['ContentType'] = content_type
+            await s3.put_object(**params)
         return filename
 
     async def remove_key(self, key: str):
