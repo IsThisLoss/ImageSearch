@@ -32,7 +32,7 @@ class Users:
         }
         await self.users.find_one_and_replace(
             {'username': username},
-            {'$setOnInsert': data},
+            data,
             new=True,
             upsert=True,
         )

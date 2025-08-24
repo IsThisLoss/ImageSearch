@@ -141,3 +141,6 @@ minio_data
 mongo_db
 node_modules
 run
+
+# mac os
+.DS_Store

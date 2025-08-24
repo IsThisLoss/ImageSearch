@@ -1,8 +1,8 @@
 import functools
-import pydantic
 
+import pydantic_settings
 
-class Settings(pydantic.BaseSettings):
+class Settings(pydantic_settings.BaseSettings):
     mongodb_login: str = 'image_search'
     mongodb_password: str = 'image_search_password'
     mongodb_host: str = 'localhost'
